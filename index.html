@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZK// ACCESS ROADMAP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0F1A;
+    --panel:#111826;
+    --panel-2:#16202F;
+    --line:#1C2537;
+    --line-soft:#141C2B;
+    --text:#E6EAF2;
+    --muted:#7A8699;
+    --muted-2:#57657A;
+    --granted:#7FE7A4;
+    --granted-dim:#2C4436;
+    --progress:#F2B84B;
+    --progress-dim:#4A3C22;
+    --locked:#34405A;
+    --brand:#57C7E3;
+    --danger:#E2725B;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh;}
+  body{
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: -1px -1px;
+  }
+  a{color:inherit;}
+  ::selection{background:var(--brand); color:#04141a;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px;}
+
+  /* HEADER */
+  header.top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    flex-wrap:wrap; gap:20px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:22px; margin-bottom:26px;
+  }
+  .brand-block .eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+    color:var(--brand); text-transform:uppercase; margin-bottom:8px;
+  }
+  .brand-block h1{
+    font-family:var(--font-display); font-weight:700; font-size:clamp(28px,4vw,40px);
+    letter-spacing:-0.01em;
+  }
+  .brand-block h1 span{color:var(--muted); font-weight:500;}
+  .brand-block .sub{
+    font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:8px;
+  }
+
+  .clock-panel{
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .clock{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding:12px 16px; min-width:150px;
+  }
+  .clock .label{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:6px;
+  }
+  .clock .value{
+    font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--brand);
+  }
+  .clock .value small{font-size:12px; color:var(--muted-2); font-weight:400; margin-left:4px;}
+  .clock.warn .value{color:var(--progress);}
+
+  /* CLEARANCE METER — signature element */
+  .clearance{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:22px 24px; margin-bottom:30px;
+    display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  }
+  .badge-ring{
+    position:relative; width:92px; height:92px; flex:none;
+  }
+  .badge-ring svg{transform:rotate(-90deg);}
+  .badge-ring .pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; font-family:var(--font-mono);
+  }
+  .badge-ring .pct .num{font-size:20px; font-weight:600; color:var(--text);}
+  .badge-ring .pct .lbl{font-size:8px; color:var(--muted); letter-spacing:.08em;}
+  .clearance-info{flex:1; min-width:220px;}
+  .clearance-info .rank{
+    font-family:var(--font-mono); font-size:11px; color:var(--brand); letter-spacing:.1em;
+    text-transform:uppercase; margin-bottom:4px;
+  }
+  .clearance-info h2{
+    font-family:var(--font-display); font-size:20px; margin-bottom:6px;
+  }
+  .clearance-info p{color:var(--muted); font-size:13px; line-height:1.5; max-width:520px;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-family:var(--font-mono); font-size:11px; color:var(--muted);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
+
+  /* LAYOUT */
+  .layout{display:grid; grid-template-columns: 1fr 300px; gap:26px;}
+  @media (max-width: 880px){ .layout{grid-template-columns:1fr;} }
+
+  .tracks{display:flex; flex-direction:column; gap:18px;}
+
+  .track{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden;
+  }
+  .track-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px; cursor:pointer; user-select:none;
+    border-bottom:1px solid var(--line);
+  }
+  .track-head-left{display:flex; align-items:center; gap:12px;}
+  .track-id{
+    font-family:var(--font-mono); font-size:11px; color:var(--bg); background:var(--brand);
+    border-radius:4px; padding:3px 7px; font-weight:600;
+  }
+  .track-head h3{font-family:var(--font-display); font-size:16px; font-weight:600;}
+  .track-head .why{font-size:12px; color:var(--muted); margin-top:2px;}
+  .track-meta{display:flex; align-items:center; gap:12px;}
+  .track-bar{width:90px; height:5px; background:var(--line); border-radius:3px; overflow:hidden;}
+  .track-bar-fill{height:100%; background:var(--granted); border-radius:3px; transition:width .3s ease;}
+  .track-count{font-family:var(--font-mono); font-size:11px; color:var(--muted); min-width:38px; text-align:right;}
+  .chev{color:var(--muted-2); transition:transform .2s ease; font-size:12px;}
+  .track.open .chev{transform:rotate(90deg);}
+
+  .nodes{
+    display:none;
+    padding:6px 10px 14px;
+  }
+  .track.open .nodes{display:block;}
+
+  .node{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:10px 8px; border-radius:6px; cursor:pointer;
+    border-left:3px solid var(--locked);
+    margin:2px 0;
+    transition:background .15s ease;
+  }
+  .node:hover{background:var(--panel-2);}
+  .node .stat{
+    font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase;
+    padding:2px 6px; border-radius:3px; flex:none; margin-top:2px;
+    background:var(--locked); color:var(--muted);
+    min-width:64px; text-align:center;
+  }
+  .node.progress{border-left-color:var(--progress);}
+  .node.progress .stat{background:var(--progress-dim); color:var(--progress);}
+  .node.granted{border-left-color:var(--granted);}
+  .node.granted .stat{background:var(--granted-dim); color:var(--granted);}
+  .node.granted .label{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--granted-dim);}
+  .node-body .label{font-size:13.5px; font-weight:500;}
+  .node-body .detail{font-size:11.5px; color:var(--muted); margin-top:2px; line-height:1.4;}
+
+  /* SIDEBAR — TARGETS */
+  .side-panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:18px; height:fit-content; position:sticky; top:20px;
+  }
+  .side-panel h3{font-family:var(--font-display); font-size:15px; margin-bottom:4px;}
+  .side-panel .sub{font-size:11.5px; color:var(--muted); margin-bottom:16px;}
+  .target{
+    border-top:1px solid var(--line); padding:12px 0;
+  }
+  .target:first-of-type{border-top:none; padding-top:0;}
+  .target-top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .target-top .name{font-weight:600; font-size:13.5px;}
+  .tier{
+    font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase;
+    padding:2px 6px; border-radius:3px; flex:none;
+  }
+  .tier.t1{background:var(--granted-dim); color:var(--granted);}
+  .tier.t2{background:var(--progress-dim); color:var(--progress);}
+  .tier.t3{background:var(--line); color:var(--muted);}
+  .tier.hold{background:#3a2420; color:var(--danger);}
+  .target .fit{font-size:11.5px; color:var(--muted); margin-top:5px; line-height:1.45;}
+  .target .co-row2{display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .status-pill{
+    font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 8px; border-radius:10px; cursor:pointer; border:1px solid transparent; flex:none;
+  }
+  .status-pill.watching{background:var(--line); color:var(--muted);}
+  .status-pill.applied{background:var(--progress-dim); color:var(--progress);}
+  .status-pill.interviewing{background:#1e3a52; color:var(--brand);}
+  .status-pill.offer{background:var(--granted-dim); color:var(--granted);}
+  .status-pill.rejected{background:#3a2420; color:var(--danger);}
+  .co-link{font-family:var(--font-mono); font-size:10.5px; color:var(--brand); text-decoration:none;}
+  .co-link:hover{text-decoration:underline;}
+  .co-remove{
+    margin-left:auto; background:none; border:none; color:var(--muted-2); cursor:pointer;
+    font-size:14px; line-height:1; padding:2px 4px;
+  }
+  .co-remove:hover{color:var(--danger);}
+  .add-company{
+    display:flex; flex-direction:column; gap:6px; margin-bottom:14px; padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .add-company input{
+    background:var(--bg); border:1px solid var(--line); color:var(--text); font-family:var(--font-mono);
+    font-size:11.5px; padding:7px 9px; border-radius:5px;
+  }
+  .add-company input:focus{outline:1px solid var(--brand);}
+  .add-company button{
+    background:var(--brand); border:none; color:var(--bg); font-family:var(--font-mono);
+    font-weight:600; font-size:11px; padding:7px 10px; border-radius:5px; cursor:pointer;
+  }
+
+  footer.note{
+    margin-top:30px; font-family:var(--font-mono); font-size:11px; color:var(--muted-2);
+    text-align:center; line-height:1.6;
+  }
+  footer.note button{
+    background:none; border:1px solid var(--line); color:var(--muted); font-family:var(--font-mono);
+    font-size:10.5px; padding:6px 12px; border-radius:5px; cursor:pointer; margin-top:10px;
+  }
+  footer.note button:hover{border-color:var(--danger); color:var(--danger);}
+
+  /* SYNC */
+  .sync-box{
+    max-width:420px; margin:14px auto 0; background:var(--panel); border:1px solid var(--line);
+    border-radius:8px; padding:14px 16px; text-align:left;
+  }
+  .sync-row{display:flex; gap:8px; align-items:center;}
+  .sync-row input{
+    flex:1; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    font-family:var(--font-mono); font-size:12px; padding:8px 10px; border-radius:5px;
+    letter-spacing:.03em;
+  }
+  .sync-row input:focus{outline:1px solid var(--brand);}
+  .sync-row button{
+    background:var(--brand); border:none; color:var(--bg); font-family:var(--font-mono);
+    font-weight:600; font-size:11px; padding:8px 12px; border-radius:5px; cursor:pointer; white-space:nowrap;
+  }
+  .sync-row button.secondary{background:none; border:1px solid var(--line); color:var(--muted);}
+  .sync-status{font-family:var(--font-mono); font-size:10.5px; color:var(--muted-2); margin-top:8px; min-height:14px;}
+  .sync-status.ok{color:var(--granted);}
+  .sync-status.err{color:var(--danger);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand-block">
+      <div class="eyebrow">Identity &amp; Career Access Control</div>
+      <h1>ZK<span>// ACCESS ROADMAP</span></h1>
+      <div class="sub">Analyst/A4 &rarr; Target: Cleared for lateral transfer</div>
+    </div>
+    <div class="clock-panel">
+      <div class="clock" id="clockPromo">
+        <div class="label">Promotion cycle (March, exact date TBD)</div>
+        <div class="value">--<small>days</small></div>
+      </div>
+      <div class="clock warn" id="clockExit">
+        <div class="label">Target notice date (tentative)</div>
+        <div class="value">--<small>days</small></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="clearance">
+    <div class="badge-ring">
+      <svg width="92" height="92">
+        <circle cx="46" cy="46" r="40" stroke="#1C2537" stroke-width="8" fill="none"/>
+        <circle id="ringFill" cx="46" cy="46" r="40" stroke="#7FE7A4" stroke-width="8" fill="none"
+          stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+      </svg>
+      <div class="pct"><span class="num" id="pctNum">0%</span><span class="lbl">CLEARED</span></div>
+    </div>
+    <div class="clearance-info">
+      <div class="rank" id="rankLabel">CLEARANCE LEVEL 0 — PROBATIONARY</div>
+      <h2>Overall access status</h2>
+      <p>Six credential tracks gate your transfer out of Capgemini. Grant each permission as you complete it — the badge above reflects your real clearance to apply with confidence, not just effort spent.</p>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--locked)"></i>Locked</span>
+      <span><i class="dot" style="background:var(--progress)"></i>In progress</span>
+      <span><i class="dot" style="background:var(--granted)"></i>Granted</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="tracks" id="tracks"></div>
+
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <aside class="side-panel">
+        <h3>Live Openings <span id="watchBadge" style="font-family:var(--font-mono); font-size:10px; color:var(--muted-2);"></span></h3>
+        <div class="sub">Auto-checked daily across your 5 Workday-hosted targets &mdash; Barclays, Deutsche Bank, Citi, Morgan Stanley, Baker Hughes.</div>
+        <div id="jobWatch"></div>
+      </aside>
+
+      <aside class="side-panel">
+        <h3>Company Tracker</h3>
+        <div class="sub">Watchlist &rarr; Applied &rarr; Interviewing &rarr; Offer. Tap a status pill to advance it.</div>
+        <div class="add-company">
+          <input id="newCoName" type="text" placeholder="Company name" maxlength="60">
+          <input id="newCoUrl" type="text" placeholder="Careers URL (optional)" maxlength="200">
+          <button id="addCoBtn">Add</button>
+        </div>
+        <div id="targets"></div>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="note">
+    Personal tool &middot; progress saved locally in this browser &middot; no data leaves this page
+    <br><button id="resetBtn">Reset all progress</button>
+
+    <div class="sync-box">
+      <div class="sync-row">
+        <input id="syncCodeInput" type="text" placeholder="sync code, e.g. ZK-7F3K2" maxlength="24">
+        <button id="syncLinkBtn">Link device</button>
+      </div>
+      <div class="sync-row" style="margin-top:8px;">
+        <button id="syncGenerateBtn" class="secondary" style="flex:1;">Generate new code</button>
+      </div>
+      <div class="sync-status" id="syncStatus">Not linked — progress stays on this device only.</div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// ---------- DATA ----------
+const TRACKS = [
+  {
+    id: "01", key:"dsa", title:"DSA & Problem Solving",
+    why:"NeetCode patterns + timed reps",
+    nodes:[
+      {id:"dsa-arrays", label:"Arrays, Strings, Two Pointers, Sliding Window", detail:"NeetCode 150 core set"},
+      {id:"dsa-trees", label:"Trees, Graphs, BFS/DFS", detail:"Recursion + traversal fluency"},
+      {id:"dsa-dp", label:"Dynamic Programming patterns", detail:"Top-down then bottom-up per pattern"},
+      {id:"dsa-heaps", label:"Heaps, Intervals, Backtracking", detail:"Second-tier NeetCode patterns"},
+      {id:"dsa-roadmap", label:"roadmap.sh LeetCode checklist pass", detail:"Cross-check for gaps NeetCode doesn't cover"},
+      {id:"dsa-timed", label:"Weekly timed contest reps", detail:"Simulate pressure, not just untimed solving"}
+    ]
+  },
+  {
+    id:"02", key:"sysdesign", title:"System Design",
+    why:"HLD + LLD, framework-first",
+    nodes:[
+      {id:"sd-primer", label:"system-design-primer core reads", detail:"Free GitHub baseline, do this first"},
+      {id:"sd-bytebytego", label:"ByteByteGo top case studies", detail:"TinyURL, rate limiter, news feed, chat, search"},
+      {id:"sd-hld", label:"HLD: design an entitlement/IAM service", detail:"Your own domain — strongest talking point"},
+      {id:"sd-lld", label:"LLD/OOAD via Codemia", detail:"Parking lot, vending machine style problems"},
+      {id:"sd-tradeoffs", label:"Trade-off articulation, out loud", detail:"Record yourself explaining a design in 5 min"}
+    ]
+  },
+  {
+    id:"03", key:"iam", title:"IAM / Security Domain Depth",
+    why:"Your actual differentiator",
+    nodes:[
+      {id:"iam-rbac", label:"RBAC / ABAC fundamentals refresh", detail:"Be able to explain both models cold"},
+      {id:"iam-oauth", label:"OAuth2, JWT, SSO deep dive", detail:"Matches live Barclays / Baker Hughes JDs directly"},
+      {id:"iam-edd", label:"Entitlement Drift Detector v1", detail:"Dockerized, hosted demo, portfolio-ready"},
+      {id:"iam-apisec", label:"API security best practices", detail:"roadmap.sh API Security guide"},
+      {id:"iam-star", label:"SLB IAM/RBAC work &rarr; STAR case study", detail:"Write it up properly, don't wing it live"}
+    ]
+  },
+  {
+    id:"04", key:"ai", title:"AI / GenAI Differentiator",
+    why:"Embedded in current work, not a side quest",
+    nodes:[
+      {id:"ai-prompt", label:"Prompt engineering fundamentals", detail:"roadmap.sh Prompt Engineering guide"},
+      {id:"ai-rag", label:"RAG + embeddings basics", detail:"Enough to design, not necessarily train"},
+      {id:"ai-summarizer", label:"LLM access-review summarizer prototype", detail:"Extension of Entitlement Drift Detector"},
+      {id:"ai-pilot-doc", label:"SLB pilot proposal doc", detail:"Small scope, real pain point, shippable in weeks"},
+      {id:"ai-pilot-ship", label:"Ship pilot internally", detail:"This is the line that actually goes on the resume"}
+    ]
+  },
+  {
+    id:"05", key:"behavioral", title:"Behavioral & Career Ops",
+    why:"tech-interview-handbook + STAR",
+    nodes:[
+      {id:"beh-handbook", label:"tech-interview-handbook full read", detail:"Behavioral + resume + negotiation sections"},
+      {id:"beh-star", label:"Draft 6 STAR stories", detail:"Conflict, failure, leadership, ambiguity, ownership, impact"},
+      {id:"beh-resume-pbc", label:"Resume variant — product/PBC framing", detail:"Lead with systems thinking, not domain"},
+      {id:"beh-resume-gcc", label:"Resume variant — banking GCC framing", detail:"Lead with IAM/RBAC + security depth"},
+      {id:"beh-negotiation", label:"Salary negotiation script", detail:"Know your number before the call, not during it"}
+    ]
+  },
+  {
+    id:"06", key:"mocks", title:"Mock Interviews & Networking",
+    why:"Your real gap — solo prep can't fix this",
+    nodes:[
+      {id:"mock-pramp", label:"Pramp — 4 sessions", detail:"Free peer mocks, both sides of the table"},
+      {id:"mock-interviewing", label:"interviewing.io — 2 sessions", detail:"Real engineers, anonymized, higher signal"},
+      {id:"net-linkedin", label:"Weekly LinkedIn referral outreach", detail:"Target Barclays / JPMC / GCC employees specifically"},
+      {id:"net-tracker", label:"Applications tracker kept current", detail:"Notion — status per company, next action"},
+      {id:"net-manager", label:"Confirm exact March 2027 promotion date + notice terms", detail:"Cycle confirmed as March, not Oct — get the exact date and any post-promo tenure clause in writing"}
+    ]
+  },
+  {
+    id:"07", key:"projects", title:"Portfolio Projects to Build",
+    why:"Depth over breadth — 2-3 polished, not a sprawl",
+    nodes:[
+      {id:"proj-edd", label:"Entitlement Drift Detector v1 (flagship)", detail:"RBAC/IAM anomaly + drift detection, Dockerized, hosted demo — your strongest single talking point"},
+      {id:"proj-summarizer", label:"LLM Access-Review Summarizer", detail:"RAG/embeddings extension of EDD — AI integration is now table stakes, not optional flair"},
+      {id:"proj-ragbot", label:"IAM Policy RAG Assistant (secondary, optional)", detail:"Only pursue if the SLB pilot gains real traction — don't split focus before EDD ships"},
+      {id:"proj-deploy", label:"Live demo + deployment for both", detail:"Docker + hosted URL, not just local code — this is what separates a project from a repo"},
+      {id:"proj-readme", label:"README with origin story + design decisions", detail:"Why RBAC over ABAC, why this embedding approach — reasoning matters as much as the code"},
+      {id:"proj-user", label:"Get at least one real user/tester", detail:"An SLB colleague or friend actually using it beats another feature — shipped beats built-locally"}
+    ]
+  },
+  {
+    id:"08", key:"certs", title:"Certifications",
+    why:"Highest-ROI, realistic now — not CISSP yet",
+    nodes:[
+      {id:"cert-sc300", label:"Microsoft SC-300 — Identity & Access Administrator", detail:"Highest ROI — maps directly to Entra ID/RBAC that banks run heavily"},
+      {id:"cert-secplus", label:"CompTIA Security+", detail:"Clears HR/ATS filters, counts one year toward CISSP later"},
+      {id:"cert-sailpoint", label:"SailPoint IdentityIQ or Okta certification", detail:"Dominates Barclays/Deutsche Bank/BNP Paribas IAM job descriptions"},
+      {id:"cert-cissp", label:"CISSP / CISM — deferred, not now", detail:"Experience-gated to ~5 years — a Year 4-5 goal, don't start yet"}
+    ]
+  }
+];
+
+const COMPANY_SEED = [
+  {id:"co-barclays", name:"Barclays", tier:"t1", tierLabel:"Tier 1", fit:"MERN + OAuth2/JWT/API security JD matches your stack almost verbatim. Apply now.", url:"https://search.jobs.barclays/"},
+  {id:"co-jpmc", name:"JPMorgan GCC", tier:"t1", tierLabel:"Tier 1", fit:"~1,000-role India hiring wave, cybersecurity/cloud focus. Apply now.", url:"https://careers.jpmorgan.com/"},
+  {id:"co-bh-blr", name:"Baker Hughes (Bengaluru)", tier:"t1", tierLabel:"Tier 1", fit:"Software Engineering Specialist req explicitly lists secure auth/authz. Strongest non-bank match.", url:"https://careers.bakerhughes.com/"},
+  {id:"co-db", name:"Deutsche Bank", tier:"t2", tierLabel:"Tier 2", fit:"Less saturated than the obvious names, strong IAM/entitlement relevance.", url:"https://careers.db.com/"},
+  {id:"co-citi", name:"Citi", tier:"t2", tierLabel:"Tier 2", fit:"Live .NET Full Stack + microservices req — your .NET background applies here.", url:"https://jobs.citi.com/"},
+  {id:"co-socgen", name:"Societe Generale", tier:"t2", tierLabel:"Tier 2", fit:"European-heritage bank structurally locked into C#/.NET — your .NET depth is a real card.", url:"https://careers.societegenerale.com/"},
+  {id:"co-bnp", name:"BNP Paribas", tier:"t2", tierLabel:"Tier 2", fit:"Same .NET-locked profile as SocGen — worth a parallel application.", url:"https://group.bnpparibas/en/careers"},
+  {id:"co-hsbc", name:"HSBC", tier:"t2", tierLabel:"Tier 2", fit:"Regulated banking, heavy on access-control engineering.", url:"https://www.hsbc.com/careers"},
+  {id:"co-ms", name:"Morgan Stanley", tier:"t2", tierLabel:"Tier 2", fit:"Good fit, but expect entry-lateral banding at your YOE.", url:"https://www.morganstanley.com/people/experienced-professionals"},
+  {id:"co-hal", name:"Halliburton (Pune)", tier:"t3", tierLabel:"Tier 3", fit:"SLB competitor, Pune tech center — but more R&D-heavy than software/digital. Weaker fit than Baker Hughes.", url:"https://careers.halliburton.com/"},
+  {id:"co-msft", name:"Microsoft", tier:"t3", tierLabel:"Tier 3", fit:"C#/.NET is a real card here, but DSA bar is very high. Opportunistic, not primary.", url:"https://careers.microsoft.com/"},
+  {id:"co-bh-pune", name:"Baker Hughes (Pune cyber roles)", tier:"t3", tierLabel:"Tier 3", fit:"Lead/Sr Specialist security roles — reach at your YOE, revisit in 2-3 years.", url:"https://careers.bakerhughes.com/"},
+  {id:"co-oracle", name:"Oracle", tier:"hold", tierLabel:"On hold", fit:"Active large-scale layoffs through 2026. Revisit in 2027.", url:"https://www.oracle.com/careers/"},
+  {id:"co-slb", name:"SLB (own GCC)", tier:"hold", tierLabel:"On hold", fit:"12-month client non-solicit in your Capgemini offer letter. Weak legal teeth, real relational friction — wait it out.", url:"https://careers.slb.com/"}
+];
+const COMPANY_STATUSES = ["watching","applied","interviewing","offer","rejected"];
+const COMPANY_STATUS_LABEL = {watching:"WATCHING", applied:"APPLIED", interviewing:"INTERVIEWING", offer:"OFFER", rejected:"REJECTED"};
+
+const KEY_TARGET_PROMO = "2027-03-01T00:00:00"; // March 2027 cycle confirmed as the applicable one; exact day still a placeholder
+const KEY_TARGET_EXIT  = "2027-04-15T00:00:00"; // ~4-6 week buffer after March confirmation, then file notice
+const STORAGE_KEY = "zk-access-roadmap-v1";
+const SYNC_CODE_KEY = "zk-access-roadmap-sync-code";
+
+// ---------- STATE ----------
+let state = {};
+try{ state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){ state = {}; }
+
+let syncCode = null;
+try{ syncCode = localStorage.getItem(SYNC_CODE_KEY) || null; }catch(e){ syncCode = null; }
+
+let syncPushTimer = null;
+
+function setSyncStatus(msg, kind){
+  const el = document.getElementById("syncStatus");
+  if(!el) return;
+  el.textContent = msg;
+  el.className = "sync-status" + (kind ? " " + kind : "");
+}
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  if(syncCode){
+    clearTimeout(syncPushTimer);
+    syncPushTimer = setTimeout(pushToSync, 500);
+  }
+}
+
+async function pushToSync(){
+  if(!syncCode) return;
+  try{
+    setSyncStatus("Syncing…");
+    const res = await fetch(`/api/sync?code=${encodeURIComponent(syncCode)}`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ data: state })
+    });
+    if(!res.ok) throw new Error("bad response");
+    setSyncStatus(`Linked as ${syncCode} — synced just now.`, "ok");
+  }catch(e){
+    setSyncStatus(`Linked as ${syncCode} — sync failed, saved locally only.`, "err");
+  }
+}
+
+async function pullFromSync(code){
+  const res = await fetch(`/api/sync?code=${encodeURIComponent(code)}`);
+  if(!res.ok) throw new Error("bad response");
+  const json = await res.json();
+  return json.data;
+}
+
+function genCode(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "ZK-";
+  for(let i=0;i<5;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+async function initSync(){
+  const input = document.getElementById("syncCodeInput");
+  if(syncCode){
+    input.value = syncCode;
+    try{
+      const remote = await pullFromSync(syncCode);
+      if(remote && typeof remote === "object"){
+        state = remote;
+        saveLocalOnly();
+        render();
+        renderTargets();
+      }
+      setSyncStatus(`Linked as ${syncCode} — loaded latest progress.`, "ok");
+    }catch(e){
+      setSyncStatus(`Linked as ${syncCode} — couldn't reach sync server, using local copy.`, "err");
+    }
+  }
+}
+function saveLocalOnly(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+document.getElementById("syncLinkBtn").addEventListener("click", async ()=>{
+  const input = document.getElementById("syncCodeInput");
+  const code = input.value.trim().toUpperCase();
+  if(!/^[A-Z0-9-]{4,24}$/.test(code)){
+    setSyncStatus("Code must be 4-24 chars: letters, numbers, dashes.", "err");
+    return;
+  }
+  syncCode = code;
+  try{ localStorage.setItem(SYNC_CODE_KEY, syncCode); }catch(e){}
+  setSyncStatus("Linking…");
+  try{
+    const remote = await pullFromSync(syncCode);
+    if(remote && typeof remote === "object" && Object.keys(remote).length){
+      state = remote;
+      saveLocalOnly();
+      render();
+      renderTargets();
+      setSyncStatus(`Linked as ${syncCode} — pulled existing progress from that code.`, "ok");
+    }else{
+      await pushToSync();
+    }
+  }catch(e){
+    setSyncStatus(`Linked as ${syncCode} — couldn't reach sync server yet.`, "err");
+  }
+});
+
+document.getElementById("syncGenerateBtn").addEventListener("click", async ()=>{
+  const code = genCode();
+  document.getElementById("syncCodeInput").value = code;
+  syncCode = code;
+  try{ localStorage.setItem(SYNC_CODE_KEY, syncCode); }catch(e){}
+  await pushToSync();
+  setSyncStatus(`New code ${syncCode} — enter this on your other device to link it.`, "ok");
+});
+function nodeState(id){ return state[id] || "locked"; }
+function cycleState(id){
+  const cur = nodeState(id);
+  const next = cur === "locked" ? "progress" : cur === "progress" ? "granted" : "locked";
+  state[id] = next;
+  saveState();
+  render();
+}
+
+// ---------- RENDER ----------
+function render(){
+  const tracksEl = document.getElementById("tracks");
+  tracksEl.innerHTML = "";
+
+  let totalNodes = 0, totalScore = 0;
+
+  TRACKS.forEach((track, idx) => {
+    let granted = 0, progress = 0;
+    track.nodes.forEach(n => {
+      const s = nodeState(n.id);
+      if(s === "granted") granted++;
+      else if(s === "progress") progress++;
+    });
+    const total = track.nodes.length;
+    const score = granted + progress * 0.5;
+    totalNodes += total;
+    totalScore += score;
+    const pct = Math.round((score/total)*100);
+
+    const trackEl = document.createElement("div");
+    trackEl.className = "track" + (idx === 0 ? " open" : "");
+    trackEl.innerHTML = `
+      <div class="track-head" data-toggle="${track.key}">
+        <div class="track-head-left">
+          <span class="track-id">${track.id}</span>
+          <div>
+            <h3>${track.title}</h3>
+            <div class="why">${track.why}</div>
+          </div>
+        </div>
+        <div class="track-meta">
+          <div class="track-bar"><div class="track-bar-fill" style="width:${pct}%"></div></div>
+          <span class="track-count">${granted}/${total}</span>
+          <span class="chev">&#9656;</span>
+        </div>
+      </div>
+      <div class="nodes">
+        ${track.nodes.map(n => {
+          const s = nodeState(n.id);
+          const statLabel = s === "granted" ? "GRANTED" : s === "progress" ? "PENDING" : "LOCKED";
+          return `<div class="node ${s}" data-node="${n.id}">
+            <span class="stat">${statLabel}</span>
+            <div class="node-body">
+              <div class="label">${n.label}</div>
+              <div class="detail">${n.detail}</div>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    `;
+    tracksEl.appendChild(trackEl);
+  });
+
+  // interactions
+  tracksEl.querySelectorAll(".track-head").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      el.closest(".track").classList.toggle("open");
+    });
+  });
+  tracksEl.querySelectorAll(".node").forEach(el=>{
+    el.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      cycleState(el.getAttribute("data-node"));
+    });
+  });
+
+  // overall clearance
+  const overallPct = totalNodes ? Math.round((totalScore/totalNodes)*100) : 0;
+  const circumference = 251.2;
+  const offset = circumference - (overallPct/100)*circumference;
+  document.getElementById("ringFill").style.strokeDashoffset = offset;
+  document.getElementById("pctNum").textContent = overallPct + "%";
+
+  let rank = "LEVEL 0 — PROBATIONARY";
+  if(overallPct >= 90) rank = "LEVEL 4 — CLEARED FOR TRANSFER";
+  else if(overallPct >= 65) rank = "LEVEL 3 — INTERVIEW READY";
+  else if(overallPct >= 35) rank = "LEVEL 2 — ACTIVE PREP";
+  else if(overallPct >= 10) rank = "LEVEL 1 — ONBOARDING";
+  document.getElementById("rankLabel").textContent = "CLEARANCE " + rank;
+}
+
+const COMPANIES_KEY = "__companies_v1";
+
+function getCompanies(){
+  if(!Array.isArray(state[COMPANIES_KEY])){
+    state[COMPANIES_KEY] = COMPANY_SEED.map(c => ({
+      id:c.id, name:c.name, tier:c.tier, tierLabel:c.tierLabel, fit:c.fit, url:c.url,
+      status:"watching", notes:""
+    }));
+  }
+  return state[COMPANIES_KEY];
+}
+
+function renderTargets(){
+  const el = document.getElementById("targets");
+  const companies = getCompanies();
+  el.innerHTML = companies.map(c => `
+    <div class="target">
+      <div class="target-top">
+        <span class="name">${c.name}</span>
+        <span class="tier ${c.tier}">${c.tierLabel}</span>
+      </div>
+      <div class="fit">${c.fit}</div>
+      <div class="co-row2">
+        <span class="status-pill ${c.status}" data-co-status="${c.id}">${COMPANY_STATUS_LABEL[c.status]}</span>
+        ${c.url ? `<a class="co-link" href="${c.url}" target="_blank" rel="noopener">Open careers ↗</a>` : ""}
+        <button class="co-remove" data-co-remove="${c.id}" title="Remove">✕</button>
+      </div>
+    </div>
+  `).join("");
+
+  el.querySelectorAll("[data-co-status]").forEach(pill=>{
+    pill.addEventListener("click", ()=>{
+      const id = pill.getAttribute("data-co-status");
+      const co = getCompanies().find(c=>c.id===id);
+      if(!co) return;
+      const idx = COMPANY_STATUSES.indexOf(co.status);
+      co.status = COMPANY_STATUSES[(idx+1) % COMPANY_STATUSES.length];
+      saveState();
+      renderTargets();
+    });
+  });
+  el.querySelectorAll("[data-co-remove]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.getAttribute("data-co-remove");
+      state[COMPANIES_KEY] = getCompanies().filter(c=>c.id!==id);
+      saveState();
+      renderTargets();
+    });
+  });
+}
+
+document.getElementById("addCoBtn").addEventListener("click", ()=>{
+  const nameInput = document.getElementById("newCoName");
+  const urlInput = document.getElementById("newCoUrl");
+  const name = nameInput.value.trim();
+  if(!name) return;
+  let url = urlInput.value.trim();
+  if(url && !/^https?:\/\//i.test(url)) url = "https://" + url;
+  const id = "co-custom-" + Date.now();
+  getCompanies().push({
+    id, name, tier:"t3", tierLabel:"Watchlist", fit:"Added manually — update fit notes as you learn more.",
+    url, status:"watching", notes:""
+  });
+  saveState();
+  nameInput.value = "";
+  urlInput.value = "";
+  renderTargets();
+});
+
+function renderClocks(){
+  const now = new Date();
+  const promo = new Date(KEY_TARGET_PROMO);
+  const exit = new Date(KEY_TARGET_EXIT);
+  const dPromo = Math.max(0, Math.ceil((promo - now) / 86400000));
+  const dExit = Math.max(0, Math.ceil((exit - now) / 86400000));
+  document.querySelector("#clockPromo .value").innerHTML = dPromo + "<small>days</small>";
+  document.querySelector("#clockExit .value").innerHTML = dExit + "<small>days</small>";
+}
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Reset all tracked progress? This can't be undone.")){
+    state = {};
+    saveState();
+    render();
+    renderTargets();
+  }
+});
+
+renderClocks();
+renderTargets();
+render();
+initSync();
+loadJobWatch();
+
+async function loadJobWatch(force){
+  const el = document.getElementById("jobWatch");
+  const badge = document.getElementById("watchBadge");
+  el.innerHTML = `<div style="font-family:var(--font-mono); font-size:11px; color:var(--muted-2);">Checking…</div>`;
+  try{
+    const res = await fetch(`/api/job-watch${force ? "?force=1" : ""}`);
+    const data = await res.json();
+    if(data.error){
+      el.innerHTML = `<div style="font-family:var(--font-mono); font-size:11px; color:var(--danger);">Watcher error: ${data.message || data.error}</div>`;
+      return;
+    }
+    const ago = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : "unknown";
+    badge.textContent = data.fromCache ? `cached · ${ago}` : `refreshed · ${ago}`;
+
+    const errored = Object.entries(data.companies || {}).filter(([,v]) => v.status === "error");
+    let html = "";
+    if(errored.length){
+      html += `<div style="font-family:var(--font-mono); font-size:10px; color:var(--danger); margin-bottom:10px; line-height:1.5;">
+        ${errored.map(([id,v]) => `${id}: endpoint needs checking (${v.message})`).join("<br>")}
+      </div>`;
+    }
+    if(!data.matches || !data.matches.length){
+      html += `<div style="font-size:12.5px; color:var(--muted);">No keyword-matching openings right now. Checked again automatically tomorrow.</div>`;
+    } else {
+      html += data.matches.map(m => `
+        <div class="target">
+          <div class="target-top">
+            <span class="name">${m.title}</span>
+          </div>
+          <div class="fit">${m.company}${m.locationsText ? " · " + m.locationsText : ""}</div>
+          <div class="co-row2">
+            <a class="co-link" href="${m.url}" target="_blank" rel="noopener">View & apply ↗</a>
+          </div>
+        </div>
+      `).join("");
+    }
+    el.innerHTML = html;
+  }catch(e){
+    el.innerHTML = `<div style="font-family:var(--font-mono); font-size:11px; color:var(--danger);">Couldn't reach the watcher.</div>`;
+  }
+}
+</script>
+</body>
+</html>
