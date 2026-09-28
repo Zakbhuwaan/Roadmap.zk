@@ -7,7 +7,7 @@ A personal career-transition dashboard tracking progress across DSA, System Desi
 - `index.html` — the full dashboard (static HTML/CSS/JS, no build step)
 - `api/sync.js` — cross-device sync endpoint (Redis-backed via Upstash/Vercel KV)
 - `api/job-watch.js` — Workday CXS API watcher microservice; polls Barclays, Deutsche Bank, Citi, Morgan Stanley, and Baker Hughes for role-matching openings
-- `vercel.json` — Vercel Cron config (runs the job-watcher twice daily, 9 AM & 9 PM IST)
+- `vercel.json` — Vercel Cron config (runs the job-watcher daily, 9 AM IST)
 - `package.json` — dependency manifest (`@upstash/redis`)
 
 ## Deployment
